@@ -1,9 +1,14 @@
 package com.devopsbuddy.backend.persistence.domain.backend;
 
 import org.hibernate.validator.constraints.Length;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,7 +16,7 @@ import java.util.Set;
  * Created by nvishwarupe
  */
 @Entity
-public class User implements Serializable {
+public class User implements Serializable, UserDetails {
 
     /** The Serial Version UID for Serializable classes. */
     private static final long serialVersionUID = 1L;
@@ -59,7 +64,7 @@ public class User implements Serializable {
 
 
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<UserRole> userRoles = new HashSet<>();
 
     public long getId() {
@@ -173,6 +178,34 @@ public class User implements Serializable {
     public void setUserRoles(Set<UserRole> userRoles) {
         this.userRoles = userRoles;
     }
+
+
+    // UserDetailsService   interface implementation
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        userRoles.forEach(ur -> authorities.add(new Authority(ur.getRole().getName())));
+        return authorities;
+    }
+
+
+
 
 
 
