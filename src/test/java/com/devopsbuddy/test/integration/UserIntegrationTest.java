@@ -21,29 +21,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created by nvishwarupe
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = DevopsbuddyApplication.class)
-public class RepositoriesIntegrationTest {
-
-    @Autowired
-    private PlanRepository planRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+public class UserIntegrationTest extends AbstractIntegrationTest {
 
 
-    @Rule
-    public TestName testName =  new TestName();
+
+    @Rule public TestName testName = new TestName();
 
 
     @Before
@@ -72,30 +63,13 @@ public class RepositoriesIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void createNewUser() throws Exception {
 
         String username = testName.getMethodName();
-        String userEmail = testName.getMethodName().concat("@devopsbuddy.com");
+        String email = testName.getMethodName() + "@devopsbuddy.com";
 
-        Plan basicPlan = createPlan(PlansEnum.BASIC);
-        planRepository.save(basicPlan);
+        User basicUser = createUser(username, email);
 
-        User basicUser = UsersUtils.createBasicUser(username, userEmail);
-        basicUser.setPlan(basicPlan);
-
-        Role basicRole = createRole(RolesEnum.BASIC);
-        Set<UserRole> userRoles = new HashSet<>();
-        UserRole userRole = new UserRole(basicUser, basicRole);
-        userRoles.add(userRole);
-
-        basicUser.getUserRoles().addAll(userRoles);
-
-        for (UserRole ur : userRoles) {
-            roleRepository.save(ur.getRole());
-        }
-
-        basicUser = userRepository.save(basicUser);
         User newlyCreatedUser = userRepository.findOne(basicUser.getId());
         Assert.assertNotNull(newlyCreatedUser);
         Assert.assertTrue(newlyCreatedUser.getId() != 0);
@@ -109,46 +83,38 @@ public class RepositoriesIntegrationTest {
 
     }
 
-
     @Test
-    @Transactional
     public void testDeleteUser() throws Exception {
+
         String username = testName.getMethodName();
-        String userEmail = testName.getMethodName().concat("@devopsbuddy.com");
+        String email = testName.getMethodName() + "@devopsbuddy.com";
 
-
-        User basicUser = createUser(username, userEmail); // in database
+        User basicUser = createUser(username, email);
         userRepository.delete(basicUser.getId());
     }
 
+    @Test
+    public void testGetUserByEmail() throws Exception {
+        User user = createUser(testName);
 
-    //-----------------> Private methods
-
-    private Plan createPlan(PlansEnum plansEnum) {
-        return new Plan(plansEnum);
+        User newlyFoundUser = userRepository.findByEmail(user.getEmail());
+        Assert.assertNotNull(newlyFoundUser);
+        Assert.assertNotNull(newlyFoundUser.getId());
     }
 
-    private Role createRole(RolesEnum rolesEnum) {
-        return new Role(rolesEnum);
-    }
+    @Test
+    public void testUpdateUserPassword() throws Exception {
+        User user = createUser(testName);
+        Assert.assertNotNull(user);
+        Assert.assertNotNull(user.getId());
 
-    private User createUser(String username, String userEmail) {
-        Plan basicPlan = createPlan(PlansEnum.BASIC);
-        planRepository.save(basicPlan);
+        String newPassword = UUID.randomUUID().toString();
 
-        User basicUser = UsersUtils.createBasicUser(username, userEmail);
-        basicUser.setPlan(basicPlan);
+        userRepository.updateUserPassword(user.getId(), newPassword);
 
-        Role basicRole = createRole(RolesEnum.BASIC);
-        roleRepository.save(basicRole);
+        user = userRepository.findOne(user.getId());
+        Assert.assertEquals(newPassword, user.getPassword());
 
-        Set<UserRole> userRoles = new HashSet<>();
-        UserRole userRole = new UserRole(basicUser, basicRole);
-        userRoles.add(userRole);
-
-        basicUser.getUserRoles().addAll(userRoles);
-        basicUser = userRepository.save(basicUser);
-        return basicUser;
     }
 
 }
