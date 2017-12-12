@@ -58,7 +58,7 @@ public class UserSecurityServiceIntegrationTest {
         User user = userService.createUser(basicUser, PlansEnum.BASIC, userRoles);
         // After adding user retrieve the user
         String usernameReturned = basicUser.getUsername();
-        UserDetails userDetails =  userSecurityService.loadUserByUsername(usernameReturned);
+        UserDetails userDetails =  userSecurityService.loadUserByUsername(usernameReturned      );
         Assert.assertNotNull(userDetails);
         Assert.assertNotNull(userDetails.isCredentialsNonExpired());
 
