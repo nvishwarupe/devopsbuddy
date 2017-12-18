@@ -72,9 +72,20 @@ public class UserService {
      * @param email The email associated to the user to find.
      * @return a user for the given email or null if a user could not be found.
      */
+    public User findByUserName(String userName) {
+        return userRepository.findByUsername(userName);
+    }
+
+
+    /**
+     * Returns a user for the given email or null if a user could not be found.
+     * @param email The email associated to the user to find.
+     * @return a user for the given email or null if a user could not be found.
+     */
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
 
 
     @Transactional
@@ -83,6 +94,8 @@ public class UserService {
         userRepository.updateUserPassword(userId, password);
         LOG.debug("Password updated successfully for user id {} ", userId);
     }
+
+
 
 
 }
