@@ -4,7 +4,7 @@ import com.devopsbuddy.backend.persistence.domain.backend.Plan;
 import com.devopsbuddy.backend.persistence.domain.backend.Role;
 import com.devopsbuddy.backend.persistence.domain.backend.User;
 import com.devopsbuddy.backend.persistence.domain.backend.UserRole;
-//import com.devopsbuddy.backend.service.PlanService;
+import com.devopsbuddy.backend.service.PlanService;
 import com.devopsbuddy.backend.service.UserService;
 import com.devopsbuddy.enums.PlansEnum;
 import com.devopsbuddy.enums.RolesEnum;
@@ -37,8 +37,8 @@ import java.util.Set;
 @Controller
 public class SignupController {
 
-   // @Autowired
-   // private PlanService planService;
+    @Autowired
+    private PlanService planService;
 
     @Autowired
     private UserService userService;
@@ -115,8 +115,9 @@ public class SignupController {
 
         // Sets the Plan and the Roles (depending on the chosen plan)
         LOG.debug("Retrieving plan from the database");
-        //Plan selectedPlan = planService.findPlanById(planId);
-        Plan selectedPlan = null;
+
+        
+        Plan selectedPlan = planService.findPlanById(planId);
 
         if (null == selectedPlan) {
             LOG.error("The plan id {} could not be found. Throwing exception.", planId);
