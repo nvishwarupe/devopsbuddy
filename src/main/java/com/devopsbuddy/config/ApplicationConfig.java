@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories(basePackages = "com.devopsbuddy.backend.persistence.repositories")
 @EntityScan(basePackages = "com.devopsbuddy.backend.persistence.domain.backend")
 @PropertySource("file:///${user.home}/udemy/devopsbuddy/application-common.properties")
+@PropertySource("file:///${user.home}/udemy/devopsbuddy/stripe.properties")
+
 @EnableTransactionManagement
         public class ApplicationConfig {
 

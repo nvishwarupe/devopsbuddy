@@ -14,6 +14,7 @@ public class LoginController {
 
     @RequestMapping("/login")
     public String login() {
+        System.out.println("Debug here");
         return LOGIN_VIEW_NAME;
     }
 }

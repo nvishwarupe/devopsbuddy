@@ -43,6 +43,9 @@ public class UserServiceIntegrationTest extends AbstractServiceIntegrationTest {
         User user = createUser(testName);
         Assert.assertNotNull(user);
         Assert.assertNotNull(user.getId());
+        // stored password in repository matches the password encrypted that means error is different
+        System.out.println("password is "+ user.getPassword());
+        Assert.assertTrue(bCryptPasswordEncoder.matches("secret", user.getPassword()));
 
     }
 

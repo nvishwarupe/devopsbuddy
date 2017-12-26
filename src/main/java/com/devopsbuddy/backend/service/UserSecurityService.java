@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +20,10 @@ public class UserSecurityService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
@@ -26,6 +31,19 @@ public class UserSecurityService implements UserDetailsService {
             LOG.warn("Username {} not found", username);
             throw new UsernameNotFoundException("Username " + username + " not found");
         }
+
+        System.out.println("debug here 2");
+        System.out.println(user.getPassword() + "********");
+        System.out.println(user.getPassword().length() + " length of password");
+        System.out.println("username is " + username);
+        if(bCryptPasswordEncoder.matches("secret", user.getPassword() )) {
+            System.out.println("user password is " + user.getPassword());
+            System.out.println("There is no issue with password match");
+        } else
+        {
+            System.out.println("Passwords do not match");
+        }
+
         return user;
     }
 }

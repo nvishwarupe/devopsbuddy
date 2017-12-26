@@ -38,6 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/js/**",
             "/images/**",
             "/",
+            "/user/**",
             "/about/**",
             "/contact/**",
             "/error/**/*",
@@ -77,6 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
+
                 .userDetailsService(userSecurityService)
                 .passwordEncoder(passwordEncoder());
     }
